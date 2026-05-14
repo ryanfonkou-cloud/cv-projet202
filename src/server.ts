@@ -11,21 +11,21 @@ const db = new Database(path.join(__dirname, '..', 'index.db'));
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS cvs (
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    name      TEXT NOT NULL,
-    role      TEXT,
-    specialty TEXT,
-    city      TEXT,
-    email     TEXT,
-    phone     TEXT,
-    bio       TEXT,
-    skills    TEXT,
-    parcours  TEXT,
-    photo     TEXT,
-    video     TEXT,
-    audio     TEXT,
-    color     TEXT,
-    initials  TEXT,
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT NOT NULL,
+    role       TEXT,
+    specialty  TEXT,
+    city       TEXT,
+    email      TEXT,
+    phone      TEXT,
+    bio        TEXT,
+    skills     TEXT,
+    parcours   TEXT,
+    photo      TEXT,
+    video      TEXT,
+    audio      TEXT,
+    color      TEXT,
+    initials   TEXT,
     created_at TEXT DEFAULT (datetime('now'))
   )
 `);
@@ -35,8 +35,7 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, '..', 'uploads'));
   },
   filename: (req, file, cb) => {
-    const unique = Date.now() + '-' + file.originalname;
-    cb(null, unique);
+    cb(null, Date.now() + '-' + file.originalname);
   }
 });
 const upload = multer({ storage });
@@ -64,13 +63,11 @@ app.post('/api/cvs', upload.fields([
   { name: 'audio', maxCount: 1 },
 ]), (req, res) => {
   const files = req.files as Record<string, Express.Multer.File[]>;
-  const body  = req.body;
-
+  const body = req.body;
   const stmt = db.prepare(`
     INSERT INTO cvs (name, role, specialty, city, email, phone, bio, skills, parcours, photo, video, audio, color, initials)
     VALUES (@name, @role, @specialty, @city, @email, @phone, @bio, @skills, @parcours, @photo, @video, @audio, @color, @initials)
   `);
-
   const result = stmt.run({
     name:      body.name      || '',
     role:      body.role      || '',
@@ -84,10 +81,9 @@ app.post('/api/cvs', upload.fields([
     photo:     files.photo?.[0]?.filename || '',
     video:     files.video?.[0]?.filename || '',
     audio:     files.audio?.[0]?.filename || '',
-    color:     body.color     || '#6205f8',
+    color:     body.color     || '#c026d3',
     initials:  body.initials  || '',
   });
-
   res.json({ success: true, id: result.lastInsertRowid });
 });
 
@@ -97,12 +93,10 @@ app.put('/api/cvs/:id', upload.fields([
   { name: 'audio', maxCount: 1 },
 ]), (req, res) => {
   const files = req.files as Record<string, Express.Multer.File[]>;
-  const body  = req.body;
-  const id    = req.params.id;
-
+  const body = req.body;
+  const id = req.params.id;
   const existing = db.prepare('SELECT * FROM cvs WHERE id = ?').get(id) as any;
   if (!existing) return res.status(404).json({ error: 'CV non trouvé' });
-
   const stmt = db.prepare(`
     UPDATE cvs SET
       name=@name, role=@role, specialty=@specialty, city=@city,
@@ -111,7 +105,6 @@ app.put('/api/cvs/:id', upload.fields([
       color=@color, initials=@initials
     WHERE id=@id
   `);
-
   stmt.run({
     id,
     name:      body.name      || existing.name,
@@ -129,7 +122,6 @@ app.put('/api/cvs/:id', upload.fields([
     color:     body.color     || existing.color,
     initials:  body.initials  || existing.initials,
   });
-
   res.json({ success: true });
 });
 
