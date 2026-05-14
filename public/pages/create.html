@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Créer un CV</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header>
+    <h1>📄 Nouveau CV</h1>
+    <a href="../index.html" class="btn-primary">← Retour</a>
+  </header>
+  <main>
+    <div class="form-container">
+      <div class="form-section">
+        <h2>Informations personnelles</h2>
+        <div class="form-group">
+          <label>Nom complet *</label>
+          <input type="text" id="name" placeholder="Ex: Ryan Fonkou" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Role / Poste</label>
+            <input type="text" id="role" placeholder="Ex: Developpeur Web" />
+          </div>
+          <div class="form-group">
+            <label>Specialite</label>
+            <input type="text" id="specialty" placeholder="Ex: Frontend" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ville</label>
+            <input type="text" id="city" placeholder="Ex: Yaounde" />
+          </div>
+          <div class="form-group">
+            <label>Telephone</label>
+            <input type="text" id="phone" placeholder="Ex: +237 6XX XXX XXX" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="Ex: ryan@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Initiales</label>
+          <input type="text" id="initials" placeholder="Ex: RF" maxlength="3" />
+        </div>
+        <div class="form-group">
+          <label>Couleur du profil</label>
+          <input type="color" id="color" value="#6205f8" />
+        </div>
+      </div>
+      <div class="form-section">
+        <h2>A propos</h2>
+        <div class="form-group">
+          <label>Biographie</label>
+          <textarea id="bio" rows="4" placeholder="Decris-toi en quelques lignes..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Competences (separees par des virgules)</label>
+          <input type="text" id="skills" placeholder="Ex: HTML, CSS, JavaScript" />
+        </div>
+        <div class="form-group">
+          <label>Parcours / Experiences</label>
+          <textarea id="parcours" rows="4" placeholder="Tes formations, experiences..."></textarea>
+        </div>
+      </div>
+      <div class="form-section">
+        <h2>Medias</h2>
+        <div class="form-group">
+          <label>Photo de profil</label>
+          <input type="file" id="photo" accept="image/*" />
+        </div>
+        <div class="form-group">
+          <label>Video de presentation</label>
+          <input type="file" id="video" accept="video/*" />
+        </div>
+        <div class="form-group">
+          <label>Audio de presentation</label>
+          <input type="file" id="audio" accept="audio/*" />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button onclick="saveCV()" class="btn-save">Enregistrer le CV</button>
+      </div>
+      <p id="message" class="form-message"></p>
+    </div>
+  </main>
+  <script>
+    async function saveCV() {
+      const name = document.getElementById('name').value.trim();
+      if (!name) {
+        document.getElementById('message').textContent = 'Le nom est obligatoire.';
+        document.getElementById('message').style.color = 'red';
+        return;
+      }
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('role', document.getElementById('role').value);
+      formData.append('specialty', document.getElementById('specialty').value);
+      formData.append('city', document.getElementById('city').value);
+      formData.append('email', document.getElementById('email').value);
+      formData.append('phone', document.getElementById('phone').value);
+      formData.append('bio', document.getElementById('bio').value);
+      formData.append('skills', document.getElementById('skills').value);
+      formData.append('parcours', document.getElementById('parcours').value);
+      formData.append('initials', document.getElementById('initials').value);
+      formData.append('color', document.getElementById('color').value);
+      const photo = document.getElementById('photo').files[0];
+      const video = document.getElementById('video').files[0];
+      const audio = document.getElementById('audio').files[0];
+      if (photo) formData.append('photo', photo);
+      if (video) formData.append('video', video);
+      if (audio) formData.append('audio', audio);
+      const res = await fetch('/api/cvs', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('message').textContent = 'CV enregistre avec succes !';
+        document.getElementById('message').style.color = 'green';
+        setTimeout(() => window.location.href = '../index.html', 1500);
+      } else {
+        document.getElementById('message').textContent = 'Erreur lors de enregistrement.';
+        document.getElementById('message').style.color = 'red';
+      }
+    }
+  </script>
+</body>
+</html>

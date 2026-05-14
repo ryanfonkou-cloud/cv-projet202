@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CV</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+
+  <div class="cv-page" id="cv-page">
+    <p style="text-align:center;opacity:0.5;padding:100px 0;">Chargement...</p>
+  </div>
+
+  <!-- MODAL SUPPRESSION -->
+  <div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-box">
+      <div class="confirm-icon">🗑</div>
+      <h2 class="confirm-title">Supprimer ce CV ?</h2>
+      <p class="confirm-desc">Cette action est irréversible. Le CV et tous ses fichiers seront définitivement supprimés.</p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" onclick="hideConfirm()">Annuler</button>
+        <button class="btn-confirm-delete" id="btn-confirm-delete">Oui, supprimer</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  var id = new URLSearchParams(window.location.search).get('id');
+
+  function showConfirm() {
+    document.getElementById('confirm-overlay').classList.add('active');
+  }
+  function hideConfirm() {
+    document.getElementById('confirm-overlay').classList.remove('active');
+  }
+
+  document.getElementById('btn-confirm-delete').addEventListener('click', function() {
+    fetch('/api/cvs/' + id, { method: 'DELETE' })
+      .then(function() { window.location.href = '../index.html'; });
+  });
+
+  function renderParcours(raw) {
+    try {
+      var items = JSON.parse(raw);
+      if (!Array.isArray(items) || items.length === 0) return '<p class="cv2-bio">' + raw + '</p>';
+      return items.map(function(item) {
+        return '<div class="parcours-item">' +
+          '<div class="parcours-item-header">' +
+            '<span class="parcours-item-title">' + item.title + '</span>' +
+            (item.sub ? '<span class="parcours-item-sub">' + item.sub + '</span>' : '') +
+          '</div>' +
+          (item.desc ? '<p class="parcours-item-desc">' + item.desc + '</p>' : '') +
+        '</div>';
+      }).join('');
+    } catch(e) {
+      return '<p class="cv2-bio">' + raw + '</p>';
+    }
+  }
+
+  fetch('/api/cvs/' + id)
+    .then(function(r) { return r.json(); })
+    .then(function(cv) {
+      document.title = cv.name + ' — CV';
+      var color = cv.color || '#c026d3';
+
+      var skills = (cv.skills || '').split(',').map(function(s) {
+        return s.trim() ? '<span class="skill-tag">' + s.trim() + '</span>' : '';
+      }).join('');
+
+      var html =
+        // HEADER
+        '<div class="cv2-header">' +
+          '<a href="../index.html" class="cv2-back">← Retour au groupe</a>' +
+          '<div class="cv2-header-actions">' +
+            '<a href="edit.html?id=' + id + '" class="cv2-btn-edit">✏️ Modifier</a>' +
+            '<button onclick="showConfirm()" class="cv2-btn-delete">🗑 Supprimer</button>' +
+          '</div>' +
+        '</div>' +
+
+        // HERO
+        '<div class="cv2-hero">' +
+          '<div class="cv2-photo-col">' +
+            (cv.photo
+              ? '<img src="/uploads/' + cv.photo + '" alt="' + cv.name + '" class="cv2-photo">'
+              : '<div class="cv2-photo-placeholder" style="color:' + color + '">' + (cv.initials || cv.name.charAt(0)) + '</div>'
+            ) +
+          '</div>' +
+          '<div class="cv2-info-col">' +
+            '<h1 class="cv2-name">' + cv.name.toUpperCase() + '</h1>' +
+            '<p class="cv2-role" style="color:' + color + '">' + (cv.role || '').toUpperCase() + '</p>' +
+            '<div class="cv2-grid">' +
+              (cv.specialty ? '<div class="cv2-grid-item"><span class="cv2-grid-label">SPÉCIALITÉ</span><span class="cv2-grid-val">' + cv.specialty + '</span></div>' : '') +
+              (cv.city      ? '<div class="cv2-grid-item"><span class="cv2-grid-label">VILLE</span><span class="cv2-grid-val">' + cv.city + '</span></div>' : '') +
+              (cv.email     ? '<div class="cv2-grid-item"><span class="cv2-grid-label">EMAIL</span><span class="cv2-grid-val">' + cv.email + '</span></div>' : '') +
+              (cv.phone     ? '<div class="cv2-grid-item"><span class="cv2-grid-label">TÉLÉPHONE</span><span class="cv2-grid-val">' + cv.phone + '</span></div>' : '') +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        // CONTENU
+        '<div class="cv2-body">' +
+          (cv.bio
+            ? '<div class="cv2-section">' +
+                '<h3 class="cv2-section-title">À PROPOS</h3>' +
+                '<p class="cv2-bio">' + cv.bio + '</p>' +
+              '</div>'
+            : '') +
+
+          (cv.skills
+            ? '<div class="cv2-section">' +
+                '<h3 class="cv2-section-title">COMPÉTENCES</h3>' +
+                '<div class="skills-list">' + skills + '</div>' +
+              '</div>'
+            : '') +
+
+          (cv.parcours
+            ? '<div class="cv2-section">' +
+                '<h3 class="cv2-section-title">EXPÉRIENCES & FORMATIONS</h3>' +
+                renderParcours(cv.parcours) +
+              '</div>'
+            : '') +
+
+          (cv.video
+            ? '<div class="cv2-section">' +
+                '<h3 class="cv2-section-title">VIDÉO DE PRÉSENTATION</h3>' +
+                '<video controls class="cv-media-video">' +
+                  '<source src="/uploads/' + cv.video + '" type="video/mp4">' +
+                  '<source src="/uploads/' + cv.video + '" type="video/webm">' +
+                  '<source src="/uploads/' + cv.video + '" type="video/ogg">' +
+                  '<source src="/uploads/' + cv.video + '" type="video/quicktime">' +
+                '</video>' +
+              '</div>'
+            : '') +
+
+          (cv.audio
+            ? '<div class="cv2-section">' +
+                '<h3 class="cv2-section-title">AUDIO DE PRÉSENTATION</h3>' +
+                '<audio controls class="cv-media-audio"><source src="/uploads/' + cv.audio + '"></audio>' +
+              '</div>'
+            : '') +
+        '</div>';
+
+      document.getElementById('cv-page').innerHTML = html;
+    });
+</script>
+</body>
+</html>
