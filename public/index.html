@@ -8,12 +8,24 @@
 </head>
 <body>
 
+  <nav class="navbar">
+    <span class="navbar-logo">CV<span>·</span>Profil</span>
+    <span class="navbar-tag">Group 8 &nbsp;·&nbsp; ICT202</span>
+  </nav>
+
   <section class="hero">
     <div class="hero-inner">
-      <p class="hero-sub">GROUP 8 &nbsp;·&nbsp; ICT202</p>
-      <h1 class="hero-title">Bienvenue dans <span>CV-Profil</span></h1>
-      <p class="hero-desc">Créez, gérez et partagez vos CVs multimédia en quelques clics.</p>
-      <div class="hero-count" id="memberCount">00 <span>profils</span></div>
+      <p class="hero-sub">Group 8 &nbsp;·&nbsp; ICT202 &nbsp;·&nbsp; Yaoundé</p>
+      <h1 class="hero-title">
+        CV<span>·</span>Profil
+        <em>notre groupe, nos parcours</em>
+      </h1>
+      <p class="hero-desc">Explorez les profils multimédia des membres du groupe 8.</p>
+      <div class="hero-count">
+        <span class="hero-count-num" id="memberCount">00</span>
+        <span class="hero-count-label">Profils</span>
+      </div>
+      <div class="hero-line"></div>
     </div>
   </section>
 
@@ -26,6 +38,7 @@
 
   <div id="tab-liste" class="tab-panel active">
     <div class="toolbar">
+      <span class="toolbar-title">Les Profils</span>
       <div class="search-box">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -48,7 +61,6 @@
         <div class="step" data-step="3"><div class="step-circle">3</div><span>Médias</span></div>
       </div>
 
-      <!-- ÉTAPE 1 -->
       <div class="form-step active" id="step-1">
         <div class="form-section">
           <h2>Informations personnelles</h2>
@@ -87,7 +99,7 @@
             </div>
             <div class="form-group">
               <label>Couleur du profil</label>
-              <input type="color" id="color" value="#c026d3" />
+              <input type="color" id="color" value="#c8a96e" />
             </div>
           </div>
         </div>
@@ -96,7 +108,6 @@
         </div>
       </div>
 
-      <!-- ÉTAPE 2 -->
       <div class="form-step" id="step-2">
         <div class="form-section">
           <h2>Biographie</h2>
@@ -109,23 +120,18 @@
             <input type="text" id="skills" placeholder="Ex : Python, Cryptographie, Git" />
           </div>
         </div>
-
         <div class="form-section">
           <h2>Parcours & Expériences</h2>
           <p style="font-size:13px;color:var(--muted);margin-bottom:20px;opacity:0.7;">Ajoute chaque formation ou expérience séparément.</p>
-
           <div id="parcours-list"></div>
-
           <button class="btn-add-parcours" onclick="addParcours()">+ Ajouter une entrée</button>
         </div>
-
         <div class="step-actions">
           <button class="btn-back" id="btn-2-1">← Retour</button>
           <button class="btn-next" id="btn-2-3">Suivant →</button>
         </div>
       </div>
 
-      <!-- ÉTAPE 3 -->
       <div class="form-step" id="step-3">
         <div class="form-section">
           <h2>Médias</h2>
@@ -151,7 +157,6 @@
     </div>
   </div>
 
-  <!-- MODAL ALERTE -->
   <div class="confirm-overlay" id="alert-overlay">
     <div class="confirm-box">
       <div class="confirm-icon">⚠️</div>
@@ -164,16 +169,14 @@
   </div>
 
 <script>
-// ── ALERTE ──
-function showAlert(message) {
-  document.getElementById('alert-message').textContent = message;
+function showAlert(msg) {
+  document.getElementById('alert-message').textContent = msg;
   document.getElementById('alert-overlay').classList.add('active');
 }
 function hideAlert() {
   document.getElementById('alert-overlay').classList.remove('active');
 }
 
-// ── TABS ──
 document.querySelectorAll('.tab-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
     document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -183,11 +186,9 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
   });
 });
 
-// ── ÉTAPES ──
 function goStep(from, to) {
   if (to > from && !document.getElementById('name').value.trim()) {
-    showAlert('Le nom complet est obligatoire !');
-    return;
+    showAlert('Le nom complet est obligatoire !'); return;
   }
   document.getElementById('step-' + from).classList.remove('active');
   document.getElementById('step-' + to).classList.add('active');
@@ -199,75 +200,58 @@ function goStep(from, to) {
   });
 }
 
-document.getElementById('btn-1-2').addEventListener('click', function() { goStep(1, 2); });
-document.getElementById('btn-2-1').addEventListener('click', function() { goStep(2, 1); });
-document.getElementById('btn-2-3').addEventListener('click', function() { goStep(2, 3); });
-document.getElementById('btn-3-2').addEventListener('click', function() { goStep(3, 2); });
+document.getElementById('btn-1-2').addEventListener('click', function() { goStep(1,2); });
+document.getElementById('btn-2-1').addEventListener('click', function() { goStep(2,1); });
+document.getElementById('btn-2-3').addEventListener('click', function() { goStep(2,3); });
+document.getElementById('btn-3-2').addEventListener('click', function() { goStep(3,2); });
 
-// ── PARCOURS DYNAMIQUE ──
 var parcoursCount = 0;
-
-function addParcours() {
+function addParcours(data) {
   parcoursCount++;
-  var id = 'parcours-' + parcoursCount;
+  var pid = 'parcours-' + parcoursCount;
   var div = document.createElement('div');
   div.className = 'parcours-entry';
-  div.id = id;
+  div.id = pid;
   div.innerHTML =
     '<div class="parcours-entry-header">' +
       '<span class="parcours-entry-num">' + parcoursCount + '</span>' +
-      '<button class="parcours-remove-btn" onclick="removeParcours(\'' + id + '\')">✕</button>' +
+      '<button class="parcours-remove-btn" onclick="removeParcours(\'' + pid + '\')">✕</button>' +
     '</div>' +
-    '<div class="form-group">' +
-      '<label>Titre *</label>' +
-      '<input type="text" class="p-title" placeholder="Ex : Licence en Informatique" />' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label>Institution · Période</label>' +
-      '<input type="text" class="p-sub" placeholder="Ex : Université de Yaoundé 1 · 2023-2026" />' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label>Description</label>' +
-      '<textarea class="p-desc" rows="3" placeholder="Décris cette expérience ou formation..."></textarea>' +
-    '</div>';
+    '<div class="form-group"><label>Titre *</label>' +
+      '<input type="text" class="p-title" placeholder="Ex : Licence en Informatique" value="' + (data&&data.title?data.title:'') + '" /></div>' +
+    '<div class="form-group"><label>Institution · Période</label>' +
+      '<input type="text" class="p-sub" placeholder="Ex : Université de Yaoundé 1 · 2023-2026" value="' + (data&&data.sub?data.sub:'') + '" /></div>' +
+    '<div class="form-group"><label>Description</label>' +
+      '<textarea class="p-desc" rows="3" placeholder="Décris cette expérience...">' + (data&&data.desc?data.desc:'') + '</textarea></div>';
   document.getElementById('parcours-list').appendChild(div);
 }
-
-function removeParcours(id) {
-  var el = document.getElementById(id);
-  if (el) el.remove();
-}
-
+function removeParcours(id) { var el=document.getElementById(id); if(el) el.remove(); }
 function getParcours() {
-  var entries = document.querySelectorAll('.parcours-entry');
   var result = [];
-  entries.forEach(function(entry) {
-    var title = entry.querySelector('.p-title').value.trim();
-    var sub   = entry.querySelector('.p-sub').value.trim();
-    var desc  = entry.querySelector('.p-desc').value.trim();
-    if (title) {
-      result.push({ title: title, sub: sub, desc: desc });
-    }
+  document.querySelectorAll('.parcours-entry').forEach(function(e) {
+    var t = e.querySelector('.p-title').value.trim();
+    if (t) result.push({ title:t, sub:e.querySelector('.p-sub').value.trim(), desc:e.querySelector('.p-desc').value.trim() });
   });
   return JSON.stringify(result);
 }
-
-// Ajouter une première entrée par défaut
 addParcours();
 
-// ── CARTE ──
+var cardIndex = 0;
 function renderCard(cv) {
-  var color = cv.color || '#c026d3';
+  cardIndex++;
+  var color = cv.color || '#c8a96e';
   var initial = cv.initials || cv.name.charAt(0);
   var photoHtml = cv.photo
     ? '<img class="card-photo" src="/uploads/' + cv.photo + '" alt="' + cv.name + '">'
     : '<div class="card-photo-placeholder" style="color:' + color + '">' + initial + '</div>';
-
   return '<div class="card">' +
-    '<div class="card-photo-wrap">' + photoHtml + '</div>' +
+    '<div class="card-photo-wrap">' +
+      '<span class="card-num">N°' + String(cardIndex).padStart(2,'0') + '</span>' +
+      photoHtml +
+    '</div>' +
     '<div class="card-body">' +
       '<div class="card-name">' + cv.name + '</div>' +
-      '<div class="card-role">' + (cv.role || '') + '</div>' +
+      '<div class="card-role">' + (cv.role||'') + '</div>' +
       '<p class="card-bio">Clique sur <strong>Parcours</strong> pour en savoir plus.</p>' +
     '</div>' +
     '<div class="card-footer">' +
@@ -279,86 +263,65 @@ function renderCard(cv) {
   '</div>';
 }
 
-// ── CHARGER CVS ──
 function loadCVs() {
-  fetch('/api/cvs')
-    .then(function(r) { return r.json(); })
-    .then(function(cvs) {
-      document.getElementById('memberCount').innerHTML = String(cvs.length).padStart(2,'0') + ' <span>profils</span>';
-      var grid = document.getElementById('cv-grid');
-      if (cvs.length === 0) {
-        grid.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>Aucun CV pour l\'instant</p></div>';
-        return;
-      }
-      grid.innerHTML = cvs.map(renderCard).join('');
-    });
+  cardIndex = 0;
+  fetch('/api/cvs').then(function(r){return r.json();}).then(function(cvs) {
+    document.getElementById('memberCount').textContent = String(cvs.length).padStart(2,'0');
+    var grid = document.getElementById('cv-grid');
+    if (cvs.length === 0) {
+      grid.innerHTML = '<div class="empty"><div class="empty-icon">—</div><p>Aucun profil pour l\'instant</p></div>';
+      return;
+    }
+    grid.innerHTML = cvs.map(renderCard).join('');
+  });
 }
 
-// ── SUPPRIMER ──
-function deleteCV(id) {
-  fetch('/api/cvs/' + id, { method: 'DELETE' }).then(function() { loadCVs(); });
-}
-
-// ── SAUVEGARDER ──
 document.getElementById('btn-save').addEventListener('click', function() {
   var name = document.getElementById('name').value.trim();
   if (!name) { showAlert('Le nom est obligatoire !'); return; }
-
-  var formData = new FormData();
-  formData.append('name',      name);
-  formData.append('role',      document.getElementById('role').value);
-  formData.append('specialty', document.getElementById('specialty').value);
-  formData.append('city',      document.getElementById('city').value);
-  formData.append('email',     document.getElementById('email').value);
-  formData.append('phone',     document.getElementById('phone').value);
-  formData.append('bio',       document.getElementById('bio').value);
-  formData.append('skills',    document.getElementById('skills').value);
-  formData.append('parcours',  getParcours());
-  formData.append('initials',  document.getElementById('initials').value);
-  formData.append('color',     document.getElementById('color').value);
-
-  var photo = document.getElementById('photo').files[0];
-  var video = document.getElementById('video').files[0];
-  var audio = document.getElementById('audio').files[0];
-  if (photo) formData.append('photo', photo);
-  if (video) formData.append('video', video);
-  if (audio) formData.append('audio', audio);
-
+  var fd = new FormData();
+  fd.append('name', name);
+  fd.append('role', document.getElementById('role').value);
+  fd.append('specialty', document.getElementById('specialty').value);
+  fd.append('city', document.getElementById('city').value);
+  fd.append('email', document.getElementById('email').value);
+  fd.append('phone', document.getElementById('phone').value);
+  fd.append('bio', document.getElementById('bio').value);
+  fd.append('skills', document.getElementById('skills').value);
+  fd.append('parcours', getParcours());
+  fd.append('initials', document.getElementById('initials').value);
+  fd.append('color', document.getElementById('color').value);
+  var photo=document.getElementById('photo').files[0];
+  var video=document.getElementById('video').files[0];
+  var audio=document.getElementById('audio').files[0];
+  if(photo) fd.append('photo',photo);
+  if(video) fd.append('video',video);
+  if(audio) fd.append('audio',audio);
   var msg = document.getElementById('message');
   msg.textContent = 'Enregistrement...';
-  msg.style.color = 'var(--accent)';
-
-  fetch('/api/cvs', { method: 'POST', body: formData })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.success) {
-        msg.textContent = '✅ CV enregistré avec succès !';
-        msg.style.color = '#52c97a';
-        setTimeout(function() {
-          document.querySelector('[data-tab="liste"]').click();
-          loadCVs();
-        }, 1500);
-      } else {
-        msg.textContent = '❌ Erreur lors de l\'enregistrement.';
-        msg.style.color = '#e05252';
-      }
-    });
+  msg.style.color = 'var(--gold)';
+  fetch('/api/cvs',{method:'POST',body:fd}).then(function(r){return r.json();}).then(function(data){
+    if(data.success){
+      msg.textContent='✅ CV enregistré avec succès !';
+      msg.style.color='var(--green)';
+      setTimeout(function(){document.querySelector('[data-tab="liste"]').click();loadCVs();},1500);
+    } else {
+      msg.textContent='❌ Erreur lors de l\'enregistrement.';
+      msg.style.color='var(--red)';
+    }
+  });
 });
 
-// ── RECHERCHE ──
 document.getElementById('searchInput').addEventListener('input', function() {
   var q = this.value.toLowerCase();
-  fetch('/api/cvs')
-    .then(function(r) { return r.json(); })
-    .then(function(cvs) {
-      var filtered = cvs.filter(function(cv) {
-        return cv.name.toLowerCase().includes(q) || (cv.role||'').toLowerCase().includes(q);
-      });
-      var grid = document.getElementById('cv-grid');
-      grid.innerHTML = filtered.length === 0
-        ? '<div class="empty"><div class="empty-icon">🔍</div><p>Aucun résultat</p></div>'
-        : filtered.map(renderCard).join('');
-    });
+  fetch('/api/cvs').then(function(r){return r.json();}).then(function(cvs){
+    cardIndex=0;
+    var f = cvs.filter(function(cv){ return cv.name.toLowerCase().includes(q)||(cv.role||'').toLowerCase().includes(q); });
+    var grid=document.getElementById('cv-grid');
+    grid.innerHTML = f.length===0
+      ? '<div class="empty"><p>Aucun résultat</p></div>'
+      : f.map(renderCard).join('');
+  });
 });
 
 loadCVs();
